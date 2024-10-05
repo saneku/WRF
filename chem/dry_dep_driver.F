@@ -28,7 +28,11 @@ CONTAINS
                depvelocity,                                               &               
                dustgraset_1,dustgraset_2,dustgraset_3,                    &
                dustgraset_4,dustgraset_5,                                 &
-               setvel_1,setvel_2,setvel_3,setvel_4,setvel_5, imod,        &         
+               setvel_1,setvel_2,setvel_3,setvel_4,setvel_5, imod,        &
+               graset_bc,graset_oc,graset_oin,graset_sulf,                &
+               drydep_bc,drydep_oc,drydep_oin,drydep_sulf,                &
+               !graset_sod,graset_ammo,graset_chlo,graset_nitr,           &
+               !graset_num,graset_water,                                  &
                is_CAMMGMP_used,                                           &
                dep_vel,num_vert_mix,                                      &
                ids,ide, jds,jde, kds,kde,                                 &
@@ -46,7 +50,7 @@ CONTAINS
   USE module_gocart_settling
   USE module_vash_settling
   USE module_gocart_drydep
-  USE module_mosaic_drydep, only:  mosaic_drydep_driver
+  USE module_mosaic_drydep, only:  mosaic_drydep_driver, mosaic_settling_driver
   USE module_mixactivate_wrappers, only: mosaic_mixactivate, sorgam_mixactivate, &
                                          sorgam_vbs_mixactivate, soa_vbs_mixactivate
   USE module_aer_drydep
@@ -157,6 +161,15 @@ CONTAINS
                dustgraset_1,dustgraset_2,dustgraset_3,          &
                dustgraset_4,dustgraset_5,                       &
                setvel_1,setvel_2,setvel_3,setvel_4,setvel_5   
+
+
+    ! ukhov 15 Sep 2022. Added diagnostic to store dry deposition flux of MOSAIC aerosols
+    REAL, DIMENSION( ims:ime, jms:jme ), INTENT(INOUT) ::        &
+               graset_bc,graset_oc,graset_oin,graset_sulf,  &
+               drydep_bc,drydep_oc,drydep_oin,drydep_sulf
+               !graset_sod,graset_ammo,graset_chlo,graset_nitr,            &
+               !graset_num,graset_water
+
    INTEGER, INTENT(IN)  ::     imod
    
 !--- deposition and emissions stuff
@@ -569,6 +582,22 @@ CONTAINS
                ids,ide, jds,jde, kds,kde,                               &
                ims,ime, jms,jme, kms,kme,                               &
                its,ite, jts,jte, kts,kte                                )
+
+
+        ! ukhov
+        if (config_flags%mosaic_grav_settl > 0) then
+        CALL wrf_debug(15,'UKHOVA: DOING GRAV. SETTLING VELOCITIES FOR MOSAIC AEROSOLS')
+        CALL mosaic_settling_driver(                                    &
+             id,dtstep,config_flags,t_phy,moist,                        &
+             chem,rho_phy,dz8w,p8w,p_phy,                                &
+             graset_bc,graset_oc,graset_oin,graset_sulf,                &
+             !graset_sod,graset_ammo,graset_chlo,graset_nitr,            &
+             !graset_num,graset_water,                                   &
+             ids,ide, jds,jde, kds,kde,                                  &
+             ims,ime, jms,jme, kms,kme,                                  &
+             its,ite, jts,jte, kts,kte                                   )
+        end if
+
 !!! TUCCELLA
      CASE ( RACM_SOA_VBS_KPP,RACM_SOA_VBS_AQCHEM_KPP )
        CALL wrf_debug(15,'DOING DRY DEP VELOCITIES FOR SOA_VBS AEROSOLS')

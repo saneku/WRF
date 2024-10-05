@@ -239,6 +239,33 @@ state    real  dustwdload_2    ij       misc        1         -      r       "du
 state    real  dustwdload_3    ij       misc        1         -      r       "dustwdload_3"   "dustload loss by wet deposition for size 3"      "ug/m2"
 state    real  dustwdload_4    ij       misc        1         -      r       "dustwdload_4"   "dustload loss by wet deposition for size 4"      "ug/m2"
 state    real  dustwdload_5    ij       misc        1         -      r       "dustwdload_5"   "dustload loss by wet deposition for size 5"      "ug/m2"
+
+#ukhov for computing diagnostics on wet scaveging of MOSAIC aerosols (in cloud (cloud water) and below cloud (interstitial))
+state    real  wetdep_bc  ij       misc         1         -       r      "wetdep_bc"     "BC wet deposition"        "kg/m2"
+state    real  wetdep_oc  ij       misc         1         -       r      "wetdep_oc"     "OC wet deposition"        "kg/m2"
+state    real  wetdep_oin  ij      misc         1         -       r      "wetdep_oin"    "OIN wet deposition"        "kg/m2"
+state    real  wetdep_sulf  ij     misc         1         -       r      "wetdep_sulf"   "SULF wet deposition"        "kg/m2"
+
+#ukhov for computing diagnostics on dry deposition of MOSAIC aerosols
+state    real  drydep_bc  ij       misc         1         -       r      "drydep_bc"     "BC dry deposition"        "kg/m2"
+state    real  drydep_oc  ij       misc         1         -       r      "drydep_oc"     "OC dry deposition"        "kg/m2"
+state    real  drydep_oin  ij      misc         1         -       r      "drydep_oin"    "OIN dry deposition"        "kg/m2"
+state    real  drydep_sulf  ij     misc         1         -       r      "drydep_sulf"   "SULF dry deposition"        "kg/m2"
+
+#ukhov for computing diagnostics on grav. settling of MOSAIC aerosols
+state    real  graset_bc  ij       misc         1         -       r      "graset_bc"     "BC gravitational settling"        "kg/m2"
+state    real  graset_oc  ij       misc         1         -       r      "graset_oc"     "OC gravitational settling"        "kg/m2"
+state    real  graset_oin  ij      misc         1         -       r      "graset_oin"    "OIN gravitational settling"        "kg/m2"
+state    real  graset_sulf  ij     misc         1         -       r      "graset_sulf"   "SULF gravitational settling"        "kg/m2"
+#state    real  graset_sod  ij      misc         1         -       r      "graset_sod"    "SODIUM gravitational settling"        "kg/m2"
+#state    real  graset_ammo  ij     misc         1         -       r      "graset_ammo"   "AMMONIUM gravitational settling"        "kg/m2"
+#state    real  graset_chlo  ij     misc         1         -       r      "graset_chlo"   "CHLORIDE gravitational settling"        "kg/m2"
+#state    real  graset_nitr  ij     misc         1         -       r      "graset_nitr"   "NITRATE gravitational settling"        "kg/m2"
+#state    real  graset_water  ij    misc         1         -       r      "graset_water"  "WATER gravitational settling"        "kg/m2"
+#state    real  graset_num  ij      misc         1         -       r      "graset_num"    "NUMBER gravitational settling"        "#/m2"
+
+
+
 #SAPRCNOV additional emissions, automatically created using diff_mechEmiss_wrfRegistry.m script (pablo-saide@uiowa.edu)
 state   real    e_c2h2          i+jf    emis_ant        1       Z       i5r      "E_C2H2"        "C2H2 emissions"        "mol km^-2 hr^-1"
 state   real    e_alk3          i+jf    emis_ant        1       Z       i5r      "E_ALK3"        "ALK3 emissions"        "mol km^-2 hr^-1"
@@ -3899,6 +3926,8 @@ rconfig   integer     dust_smois          namelist,chem          1    0       rh
 
 # Volcanic ash height
 rconfig   real        emiss_ash_hgt       namelist,chem          1      0.      rh    "emiss_ash_hgt"       "Volcanic ash cloud top elevation (AGL)"      ""
+
+rconfig   integer     mosaic_grav_settl   namelist,chem      max_domains        1       rh    "mosaic_grav_settling"      "if 1, gravitational settling of MOSAIC aerosol mixture will be applied"      ""
 
 # additional namelist variables to control deposition of the organic condensable vapors
 rconfig   real        depo_fact           namelist,chem          max_domains    0.25       rh    "deposition factor for SOA vapors"      ""      ""

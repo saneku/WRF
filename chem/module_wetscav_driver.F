@@ -30,6 +30,8 @@ CONTAINS
                wd_so2, wd_sulf, wd_hno3, wd_nh3,                           &
                wd_cvasoa, wd_cvbsoa, wd_asoa, wd_bsoa,                     &
                qv_b4mp, qc_b4mp, qi_b4mp, qs_b4mp,                         &
+               !ukhov aerosols wet scaveging diagnostics. 16 Sep 2022
+               wetdep_bc,wetdep_oc,wetdep_oin,wetdep_sulf,                 &
 !======================================================================================
 !Variables required for CAM_MAM_WETSCAV
                p_hyd,scalar,dgnum4d,dgnumwet4d,dlf3d,dlf2_3d,qme3d,prain3d,&
@@ -81,6 +83,9 @@ CONTAINS
                          mw_asoaX_aer, mw_asoa1_aer, mw_asoa2_aer, mw_asoa3_aer, mw_asoa4_aer, &
                          mw_bsoaX_aer, mw_bsoa1_aer, mw_bsoa2_aer, mw_bsoa3_aer, mw_bsoa4_aer, &
                                        mw_biog1_c_aer, mw_biog1_o_aer
+
+   USE module_data_mosaic_asect, only: ntype_aer, nsize_aer, ncomp_aer, massptr_aer, ai_phase, &
+       cw_phase,lptr_bc_aer,lptr_oc_aer,lptr_oin_aer,lptr_so4_aer
 
    IMPLICIT NONE
 
@@ -256,6 +261,11 @@ CONTAINS
    REAL, DIMENSION( ims:ime, jms:jme, num_chem )            ,       &
           INTENT(INOUT) ::                                          &
                                                        wdflx !wet deposition mol/m^2 or #/m^2 or ug/m^2
+   ! ukhov 16 Sep 2022. Added diagnostic to store wet deposition flux of MOSAIC aerosols
+   ! by grid-resolved precipitation
+   REAL, DIMENSION( ims:ime, jms:jme ), INTENT(INOUT) ::        &
+               wetdep_bc,wetdep_oc,wetdep_oin,wetdep_sulf
+
 !
 !input (4D)
 REAL,  DIMENSION( ims:ime , kms:kme , jms:jme , ntot_amode ),       &
@@ -273,6 +283,8 @@ REAL,  DIMENSION( ims:ime , kms:kme , jms:jme , ntot_amode ),       &
    REAL ::  tmp_minval = 1.0e7
    REAL,  DIMENSION( ims:ime , kms:kme , jms:jme ) :: rainrate, evaprate
 
+   REAL*8 conver
+   integer i, j,n,l1,itype,ll
 !
 ! Wet deposition over the current time step
 !
@@ -371,6 +383,74 @@ REAL,  DIMENSION( ims:ime , kms:kme , jms:jme , ntot_amode ),       &
                ids,ide, jds,jde, kds,kde,                                  &
                ims,ime, jms,jme, kms,kme,                                  &
                its,ite, jts,jte, kts,kte                                   )
+
+         !!!!!!!!!!!!!!!!!!!!
+         ! ukhova 15 Sep 2022. Added dry deposition accumulated flux for some MOSAIC aerosols
+         if( config_flags%diagnostic_dep == 1) then
+            
+            conver=1.e-9
+             
+             do j = jts, jte
+             do i = its, ite
+                 do itype = 1, ntype_aer
+                 do n = 1, nsize_aer(itype)
+                     do ll = 1, ncomp_aer(itype)
+          
+                     !BELOW cloud SCAVEGING (scavenging interstitial-phase aerosol)
+                         l1 = massptr_aer(ll,n,itype,ai_phase)                
+                         !BC
+                         if (l1 == lptr_bc_aer(n,itype,ai_phase)) then
+                             wetdep_bc(i,j)=wetdep_bc(i,j)-qsrflx(i,j,l1)*conver  ! kg/m2
+                             !write(0,*)'BC',l1,n,ai_phase,qsrflx(i,j,l1)
+                         endif
+
+                         !OC
+                         if (l1 == lptr_oc_aer(n,itype,ai_phase)) then
+                             wetdep_oc(i,j)=wetdep_oc(i,j)-qsrflx(i,j,l1)*conver
+                         endif
+
+                         !OIN
+                         if (l1 == lptr_oin_aer(n,itype,ai_phase)) then
+                             wetdep_oin(i,j)=wetdep_oin(i,j)-qsrflx(i,j,l1)*conver
+                         endif
+
+                         !SULF
+                         if (l1 == lptr_so4_aer(n,itype,ai_phase)) then
+                             wetdep_sulf(i,j)=wetdep_sulf(i,j)-qsrflx(i,j,l1)*conver
+                         endif
+
+                     ! scavenging cloud-phase aerosol
+                         l1 = massptr_aer(ll,n,itype,cw_phase)                
+                         !BC
+                         if (l1 == lptr_bc_aer(n,itype,cw_phase)) then
+                             wetdep_bc(i,j)=wetdep_bc(i,j)-qsrflx(i,j,l1)*conver  ! kg/m2
+                             !write(0,*)'BC',l1,n,cw_phase,qsrflx(i,j,l1)
+                         endif
+
+                         !OC
+                         if (l1 == lptr_oc_aer(n,itype,cw_phase)) then
+                             wetdep_oc(i,j)=wetdep_oc(i,j)-qsrflx(i,j,l1)*conver
+                         endif
+
+                         !OIN
+                         if (l1 == lptr_oin_aer(n,itype,cw_phase)) then
+                             wetdep_oin(i,j)=wetdep_oin(i,j)-qsrflx(i,j,l1)*conver
+                         endif
+
+                         !SULF
+                         if (l1 == lptr_so4_aer(n,itype,cw_phase)) then
+                             wetdep_sulf(i,j)=wetdep_sulf(i,j)-qsrflx(i,j,l1)*conver
+                         endif
+
+                     end do
+                 end do ! nsize_aer(itype)
+                 enddo  ! ntype_aer
+             end do
+             end do
+         end if       
+         !!!!!!!!!!!!!!!!!!!!!
+
+
    CASE (MOZART_KPP,MOZCART_KPP,T1_MOZCART_KPP,MOZART_MOSAIC_4BIN_KPP)
        CALL wrf_debug(15,'wetscav_driver calling wetscav_mozcart')
        if( config_flags%mp_physics == THOMPSON ) then

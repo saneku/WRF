@@ -1066,6 +1066,10 @@
                  grid%dustgraset_4,grid%dustgraset_5,                                 &
                  grid%setvel_1,grid%setvel_2,grid%setvel_3,grid%setvel_4,             &
                  grid%setvel_5, imod,                                                 &                  
+                 grid%graset_bc,grid%graset_oc,grid%graset_oin,grid%graset_sulf,      &
+                 grid%drydep_bc,grid%drydep_oc,grid%drydep_oin,grid%drydep_sulf,      &
+                 !grid%graset_sod,grid%graset_ammo,grid%graset_chlo,grid%graset_nitr,  &
+                 !grid%graset_num,grid%graset_water,                                   &
                  grid%is_CAMMGMP_used,                                                &
                  grid%dep_vel,grid%num_vert_mix,                                      &
                  ids,ide, jds,jde, kds,kde,                                           &
