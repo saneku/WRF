@@ -13,6 +13,9 @@
 
 package   fire_sfire    ifire==2                    -             state:avg_fuel_frac,bbb,betafl,burnt_area_dt,canhfx,canqfx,dzdxf,dzdyf,fcanhfx,fcanqfx,fgip,fgrnhfx,fgrnqfx,fire_area,fire_smoke,flame_length,fmc_equi,fmc_g,fmc_gc,fmep,fmc_lag,fmoist_lasttime,fmoist_nexttime,fuel_frac,fuel_time,fxlat,fxlong,fz0,grnhfx,grnhfx_fu,grnqfx,grnqfx_fu,iboros,ischap,lfn,lfn_0,lfn_1,lfn_2,lfn_hist,lfn_s0,lfn_s1,lfn_s2,lfn_s3,lfn_time,nfuel_cat,phiwc,psfc_old,q2_old,r_0,rain_old,rh_fire,ros,ros_front,rqvfrten,rthfrten,t2_old,tign_g,uah,uf,vah,vf,zsf,fs_last_gen_dt,fs_gen_idmax,fs_count_reset,fs_fire_ROSdt,fs_fire_area,fs_fuel_spotting_risk,fs_count_landed_all,fs_count_landed_hist,fs_landing_mask,fs_gen_inst,fs_frac_landed,fs_spotting_lkhd 
 
+# ukhova 110221
+package   fire_stat_fire ifire==3                   -             state:rthfrten,grnhfx
+
 package  fire_fmoist_run   fmoisti_run==1           -             state:fmc_gc,fmep,fmc_equi,fmc_lag,rain_old,t2_old,psfc_old,rh_fire
 package  fire_fmoist_interp fmoisti_interp==1       -             state:fmc_gc
 
@@ -26,6 +29,25 @@ package  fire_fmoist_interp fmoisti_interp==1       -             state:fmc_gc
 dimspec   ign   2           constant=1      z    i_lfn_history
 state     real  lfn_hist    *i*j        fire   1    Z   i012hr     "LFN_HIST"    "level function history" "1"
 state     real  lfn_time    {ign}       fire   1    -   i012hr     "LFN_TIME"    "level function history time" "s"
+
+
+#ukhova 18 Feb 2021
+#Stationary fires
+state    real  fire_year     ij     fire        1         -      i{16}r    "FIRE_YEAR"              "START YEAR OF FIRE"      "year"
+state    real  fire_month    ij     fire        1         -      i{16}r    "FIRE_MONTH"             "START MONTH OF FIRE"     "month"
+state    real  fire_day      ij     fire        1         -      i{16}r    "FIRE_DAY"               "START DAY OF FIRE"       "day"
+state    real  fire_hour     ij     fire        1         -      i{16}r    "FIRE_HOUR"              "START HOUR OF FIRE"      "hour"
+state    real  fire_dur      ij     fire        1         -      i{16}r    "FIRE_DUR"               "DURATION OF FIRE"        "seconds"
+state    real  fire_hflx     ij     fire        1         -      i{16}r    "FIRE_HFLX"              "HEAT FLUX OF FIRE"       "W/m2"
+state    real  fire_bc_emis  ij     fire        1         -      i{16}r    "FIRE_BC_EMIS"           "EMISSION of BC"          "kg"
+state    real  fire_oc_emis  ij     fire        1         -      i{16}r    "FIRE_OC_EMIS"           "EMISSION of OC"          "kg"
+state    real  fire_so2_emis ij     fire        1         -      i{16}r    "FIRE_SO2_EMIS"          "EMISSION of SO2"         "kg"
+state    real  fire_co2_emis ij     fire        1         -      i{16}r    "FIRE_CO2_EMIS"          "EMISSION of CO2"         "kg"
+state    real  fire_co_emis  ij     fire        1         -      i{16}r    "FIRE_CO_EMIS"           "EMISSION of CO"          "kg"
+state    real  fire_no2_emis ij     fire        1         -      i{16}r    "FIRE_NO2_EMIS"          "EMISSION of NO2"         "kg"
+state    real  fire_no_emis  ij     fire        1         -      i{16}r    "FIRE_NO_EMIS"           "EMISSION of NO"          "kg"
+
+
 
 # ------------------------------------------------------------------------------------------------------------------------
 # fire variables on fire grid

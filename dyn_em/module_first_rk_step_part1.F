@@ -46,6 +46,10 @@ CONTAINS
     USE module_shallowcu_driver, ONLY : shallowcu_driver
     USE module_pbl_driver, ONLY : pbl_driver
     USE module_fr_fire_driver_wrf, ONLY : fire_driver_em_step
+    
+    ! ukhova 110221
+    USE module_kuwait_fire_driver, ONLY : fire_driver_kuwait_em_step
+
     USE module_fddagd_driver, ONLY : fddagd_driver
     USE module_em, ONLY : init_zero_tendency
     USE module_force_scm
@@ -1361,6 +1365,18 @@ BENCH_START(fire_driver_tim)
 BENCH_END(fire_driver_tim)
        ENDIF
 
+! ukhova 110221: Kuwait fires in 1991
+if(config_flags%ifire.eq.FIRE_KUWAIT)then 
+        call fire_driver_kuwait_em_step ( grid , config_flags   &
+            ,grid%fire_year,grid%fire_month,grid%fire_day,grid%fire_hour &
+            ,grid%fire_dur,grid%fire_hflx,grid%fire_bc_emis,grid%fire_oc_emis &
+            ,grid%fire_so2_emis                                     &
+            ,curr_secs,grid%gmt,grid%julian                         &
+            ,ids,ide, kds,kde, jds,jde                              &
+            ,ims,ime, kms,kme, jms,jme                              &
+            ,ips,ipe, kps,kpe, jps,jpe                              &
+            ,grid%rho,grid%z_at_w,dz8w)
+endif
 
 ! cumulus para.
 

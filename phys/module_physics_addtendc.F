@@ -2049,6 +2049,15 @@ SUBROUTINE phy_fr_ten(config_flags,rk_step,n_moist,            &
                 ims, ime, jms, jme, kms, kme,                    &
                 its, ite, jts, jte, kts, kte                     )
 
+      ! Ukhov. adding calculated rthfrten tendency
+      CASE (FIRE_KUWAIT)
+
+           CALL add_a2a(rt_tendf,rthfrten,                       &
+                config_flags,                                    &
+                ids,ide, jds, jde, kds, kde,                     &
+                ims, ime, jms, jme, kms, kme,                    &
+                its, ite, jts, jte, kts, kte                     )
+
       CASE DEFAULT
 
    END SELECT

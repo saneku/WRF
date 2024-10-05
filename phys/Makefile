@@ -210,6 +210,7 @@ MODULES = \
 	module_irrigation.o
 
 FIRE_MODULES = \
+        module_stat_fire_driver.o \
         module_fr_fire_driver.o \
         module_fr_fire_driver_wrf.o \
         module_fr_fire_atm.o \
